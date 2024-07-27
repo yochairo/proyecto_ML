@@ -8,6 +8,7 @@ from collections import Counter
 
 nltk.download('stopwords')
 stopwords = stopwords.words('english')
+required_columns = ['JJ', 'NN', 'RB', 'VB', 'MD', 'otros']
 
 
 def filtrar_palabras(ensayo):
@@ -56,10 +57,6 @@ def contar_categorias_pos(lista_etiquetas):
     return conteo_df
 
 
-###
-
-
-###
 
 def return_df_pos(df,text:str):
     text=filtrar_palabras(text)
@@ -67,4 +64,12 @@ def return_df_pos(df,text:str):
     cat=contar_categorias_pos(pos)
     counter_df = pd.DataFrame(cat).fillna(0).astype(int)
     df = df.join(counter_df)
+    df = ensure_columns(df, required_columns)
     return df 
+
+def ensure_columns(df, required_columns):
+    # Añadir cualquier columna que falte con un valor predeterminado (0 en este caso)
+    for col in required_columns:
+        if col not in df.columns:
+            df[col] = 0
+    return df
